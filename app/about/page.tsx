@@ -7,7 +7,7 @@ export default function About() {
       <Navigation />
       <div className="min-h-screen bg-white pt-16">
         {/* Hero Section */}
-        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-blue-50 to-white">
+        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-[#FFF8F0] to-white">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
               About Us
@@ -81,7 +81,7 @@ export default function About() {
             </p>
             <a
               href="/"
-              className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+              className="inline-block bg-[#D86F2C] text-white px-8 py-4 rounded-xl font-bold hover:bg-[#C05F1F] transition-colors"
             >
               Join the Waitlist
             </a>

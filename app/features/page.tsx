@@ -6,7 +6,7 @@ export default function Features() {
       <Navigation />
       <div className="min-h-screen bg-white pt-16">
         {/* Hero Section */}
-        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-blue-50 to-white">
+        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-[#FFF8F0] to-white">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
               Powerful Features
@@ -24,7 +24,7 @@ export default function Features() {
               {/* Feature 1 */}
               <div className="flex gap-6">
                 <div className="flex-shrink-0">
-                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <div className="w-12 h-12 bg-[#D86F2C]/10 rounded-lg flex items-center justify-center">
                     <span className="text-2xl">⚡</span>
                   </div>
                 </div>
@@ -40,7 +40,7 @@ export default function Features() {
               {/* Feature 2 */}
               <div className="flex gap-6">
                 <div className="flex-shrink-0">
-                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <div className="w-12 h-12 bg-[#D86F2C]/10 rounded-lg flex items-center justify-center">
                     <span className="text-2xl">🔒</span>
                   </div>
                 </div>
@@ -56,7 +56,7 @@ export default function Features() {
               {/* Feature 3 */}
               <div className="flex gap-6">
                 <div className="flex-shrink-0">
-                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <div className="w-12 h-12 bg-[#D86F2C]/10 rounded-lg flex items-center justify-center">
                     <span className="text-2xl">📊</span>
                   </div>
                 </div>
@@ -72,7 +72,7 @@ export default function Features() {
               {/* Feature 4 */}
               <div className="flex gap-6">
                 <div className="flex-shrink-0">
-                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <div className="w-12 h-12 bg-[#D86F2C]/10 rounded-lg flex items-center justify-center">
                     <span className="text-2xl">🎨</span>
                   </div>
                 </div>
@@ -88,7 +88,7 @@ export default function Features() {
               {/* Feature 5 */}
               <div className="flex gap-6">
                 <div className="flex-shrink-0">
-                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <div className="w-12 h-12 bg-[#D86F2C]/10 rounded-lg flex items-center justify-center">
                     <span className="text-2xl">🔄</span>
                   </div>
                 </div>
@@ -104,7 +104,7 @@ export default function Features() {
               {/* Feature 6 */}
               <div className="flex gap-6">
                 <div className="flex-shrink-0">
-                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <div className="w-12 h-12 bg-[#D86F2C]/10 rounded-lg flex items-center justify-center">
                     <span className="text-2xl">🌍</span>
                   </div>
                 </div>
@@ -127,25 +127,25 @@ export default function Features() {
               Coming Soon
             </h2>
             <div className="grid sm:grid-cols-2 gap-6">
-              <div className="bg-white p-6 rounded-lg border-2 border-blue-200">
+              <div className="bg-white p-6 rounded-lg border-2 border-[#D86F2C]/20">
                 <h3 className="text-lg font-semibold mb-2">API Integration</h3>
                 <p className="text-gray-600">
                   Connect with your favorite tools and services through our powerful API.
                 </p>
               </div>
-              <div className="bg-white p-6 rounded-lg border-2 border-blue-200">
+              <div className="bg-white p-6 rounded-lg border-2 border-[#D86F2C]/20">
                 <h3 className="text-lg font-semibold mb-2">Mobile Apps</h3>
                 <p className="text-gray-600">
                   Native iOS and Android apps for on-the-go productivity.
                 </p>
               </div>
-              <div className="bg-white p-6 rounded-lg border-2 border-blue-200">
+              <div className="bg-white p-6 rounded-lg border-2 border-[#D86F2C]/20">
                 <h3 className="text-lg font-semibold mb-2">AI Assistant</h3>
                 <p className="text-gray-600">
                   Smart AI-powered features to automate your workflow.
                 </p>
               </div>
-              <div className="bg-white p-6 rounded-lg border-2 border-blue-200">
+              <div className="bg-white p-6 rounded-lg border-2 border-[#D86F2C]/20">
                 <h3 className="text-lg font-semibold mb-2">Team Collaboration</h3>
                 <p className="text-gray-600">
                   Advanced team features for seamless collaboration at scale.
@@ -166,7 +166,7 @@ export default function Features() {
             </p>
             <a
               href="/"
-              className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+              className="inline-block bg-[#D86F2C] text-white px-8 py-4 rounded-xl font-bold hover:bg-[#C05F1F] transition-colors"
             >
               Join the Waitlist
             </a>

@@ -52,9 +52,9 @@ export default function WaitlistForm() {
           <button
             type="submit"
             disabled={loading}
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-blue-400 disabled:cursor-not-allowed"
+            className="bg-[#D86F2C] text-white px-8 py-4 rounded-xl font-bold hover:bg-[#C05F1F] transition-colors disabled:bg-[#D86F2C]/60 disabled:cursor-not-allowed text-lg"
           >
-            {loading ? 'Joining...' : 'Join Waitlist'}
+            {loading ? 'Signing up...' : 'Piesakies jaunumiem'}
           </button>
         </form>
       )}
