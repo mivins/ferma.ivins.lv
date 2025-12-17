@@ -30,7 +30,11 @@ const Navbar: React.FC<NavbarProps> = ({ lang, setLang }) => {
            <span className="text-xs font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded-full uppercase tracking-wider">Atgriežas</span>
         </div>
 
-        <div className="flex items-center gap-4 relative">
+        <div className="flex items-center gap-6 relative">
+          <a href="/vesture" className="text-sm font-medium text-stone-600 hover:text-orange-600 transition-colors">
+            Vēsture
+          </a>
+
           <button
             onClick={handleLangClick}
             className="flex items-center gap-2 text-sm font-medium text-stone-600 hover:text-orange-600 transition-colors bg-stone-100 hover:bg-orange-50 px-3 py-1.5 rounded-full focus:outline-none focus:ring-2 focus:ring-orange-500/50"
