@@ -1,18 +1,19 @@
-'use client';
+import React, { useState, useEffect } from 'react';
+import { CONTENT } from './constants';
+import { Language } from './types';
+import Navbar from './components/Navbar';
+import Hero from './components/Hero';
+import Features from './components/Features';
+import Nostalgia from './components/Nostalgia';
+import SneakPeek from './components/SneakPeek';
+import WaitlistForm from './components/WaitlistForm';
+import Footer from './components/Footer';
 
-import React, { useState } from 'react';
-import { Language } from '@/lib/types';
-import { CONTENT } from '@/lib/constants';
-import Navbar from '@/components/Navbar';
-import Hero from '@/components/Hero';
-import Features from '@/components/Features';
-import Nostalgia from '@/components/Nostalgia';
-import SneakPeek from '@/components/SneakPeek';
-import FermaWaitlistForm from '@/components/FermaWaitlistForm';
-import Footer from '@/components/Footer';
-
-export default function Home() {
+const App: React.FC = () => {
   const [lang, setLang] = useState<Language>('lv');
+  
+  // Set default language based on browser preference logic if needed, 
+  // currently defaults to LV as per request nature.
 
   const content = CONTENT[lang];
 
@@ -26,16 +27,18 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-stone-50 text-stone-900 font-sans">
       <Navbar lang={lang} setLang={setLang} />
-
+      
       <main>
         <Hero content={content.hero} scrollToWaitlist={scrollToWaitlist} />
         <Features content={content.features} />
         <Nostalgia content={content.nostalgia} />
         <SneakPeek content={content.peek} />
-        <FermaWaitlistForm content={content.waitlist} id="waitlist" />
+        <WaitlistForm content={content.waitlist} id="waitlist" />
       </main>
 
       <Footer content={content.footer} />
     </div>
   );
-}
+};
+
+export default App;
