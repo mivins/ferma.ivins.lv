@@ -48,13 +48,13 @@ export default function VesturePage() {
                   </div>
                   <h3 className="text-xl font-bold text-stone-900 mb-3">Leģendas dzimšana</h3>
                   <p className="text-stone-600 leading-relaxed mb-4">
-                    SIA "apiEasy.com" izveido Fermu platformai draugiem.lv. Spēle kļūst par tūlītēju sensāciju -
+                    Ferma tiek izveidota kā sociālā spēle latviešu tiešsaistes kopienai. Spēle kļūst par tūlītēju sensāciju -
                     pirmajās sešās dienās piesaista <strong>617,899 spēlētājus</strong>. Latvijā ar ~2 miljoniem
                     iedzīvotāju, tas ir fenomenāls sasniegums.
                   </p>
                   <div className="flex items-center gap-2 text-sm text-stone-500">
                     <Users className="w-4 h-4" />
-                    Platforma: draugiem.lv
+                    Sociālā tīkla spēle
                   </div>
                 </div>
               </div>
@@ -69,9 +69,9 @@ export default function VesturePage() {
                   </div>
                   <h3 className="text-xl font-bold text-stone-900 mb-3">Latvijas #1 spēle</h3>
                   <p className="text-stone-600 leading-relaxed mb-4">
-                    Ferma sasniedz ~350,000 reģistrētu lietotāju un kļūst par #1 spēli draugiem.lv.
+                    Ferma sasniedz ~350,000 reģistrētu lietotāju un kļūst par #1 sociālo spēli.
                     To spēlē visi - ministri, skolēni, pensionāri. Radīta vesela spēļu ģimene:
-                    Eksotiskā ferma, Zombie ferma, Gardezu ferma.
+                    Eksotiskā ferma, Lielpilsēta un citas.
                   </p>
                   <div className="bg-green-50 p-4 rounded-xl border border-green-100 mt-4">
                     <p className="text-sm text-green-900 font-medium">
@@ -182,8 +182,8 @@ export default function VesturePage() {
             <div className="bg-white p-8 rounded-2xl shadow-lg border border-stone-100">
               <p className="text-lg text-stone-700 leading-relaxed mb-6">
                 Ferma bija vairāk nekā tikai spēle - tā bija digitālā lauku sēta, kur tikās gandrīz
-                618,000 cilvēku no visām sabiedrības grupām. Ministri un skolēni, bezdarbnieki un
-                uzņēmēji - visi kopā audzēja virtuālos burkānus un apkopa pikseļveida aitas.
+                618,000 cilvēku no visām sabiedrības grupām. Visi kopā audzēja virtuālos burkānus
+                un apkopa pikseļveida aitas, veidojot kopīgu pieredzi, kas apvienoja visu Latviju.
               </p>
 
               <div className="bg-orange-50 p-6 rounded-xl border border-orange-100 mb-6">
@@ -203,13 +203,13 @@ export default function VesturePage() {
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-orange-500 mt-1">•</span>
-                    <span>Pierādīja Latvijas spēļu industrijas potenciālu</span>
+                    <span>Parādīja latviešu spēļu izstrādes potenciālu</span>
                   </li>
                 </ul>
               </div>
 
               <p className="text-stone-600 italic text-center">
-                "Ferma bija ne tikai spēle, bet vesela Latvijas interneta kultūras laikmets."
+                "Ferma bija ne tikai spēle, bet vesels laikmets latviešu interneta kultūrā."
               </p>
             </div>
           </div>
