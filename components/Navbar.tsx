@@ -25,10 +25,10 @@ const Navbar: React.FC<NavbarProps> = ({ lang, setLang }) => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-stone-200/50">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-           <span className="font-display text-2xl font-bold text-orange-600 tracking-wide">FERMA</span>
-           <span className="text-xs font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded-full uppercase tracking-wider">Atgriežas</span>
-        </div>
+        <a href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <span className="font-display text-2xl font-bold text-orange-600 tracking-wide">FERMA</span>
+          <span className="text-xs font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded-full uppercase tracking-wider">Atgriežas</span>
+        </a>
 
         <div className="flex items-center gap-6 relative">
           <a href="/vesture" className="text-sm font-medium text-stone-600 hover:text-orange-600 transition-colors">
@@ -47,11 +47,11 @@ const Navbar: React.FC<NavbarProps> = ({ lang, setLang }) => {
           {/* Funny rejection bubble */}
           {showJoke && (
             <div className="absolute top-full right-0 mt-3 w-64 bg-stone-900 text-stone-50 text-sm font-medium p-4 rounded-2xl shadow-xl z-50 border border-stone-800">
-                {/* Arrow */}
-                <div className="absolute -top-1.5 right-6 w-3 h-3 bg-stone-900 border-l border-t border-stone-800 transform rotate-45"></div>
+              {/* Arrow */}
+              <div className="absolute -top-1.5 right-6 w-3 h-3 bg-stone-900 border-l border-t border-stone-800 transform rotate-45"></div>
 
-                <p className="leading-snug">Gribēji ko citu? Nebūs! 😎</p>
-                <p className="text-stone-400 text-xs mt-2">Spēlējam tikai latviski.</p>
+              <p className="leading-snug">Gribēji ko citu? Nebūs! 😎</p>
+              <p className="text-stone-400 text-xs mt-2">Spēlējam tikai latviski.</p>
             </div>
           )}
         </div>

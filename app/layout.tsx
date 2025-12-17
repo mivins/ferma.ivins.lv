@@ -17,6 +17,14 @@ const outfit = Outfit({
 export const metadata: Metadata = {
   title: "FERMA - Atgriešanās | Leģendārā spēle atgriežas",
   description: "Ferma - leģendārā spēle atgriežas. Tās pašas 2010. gada sajūtas un iemīļotais dizains, bet pilnīgi jaunā izpildījumā. Piesakies jaunumiem!",
+  icons: {
+    icon: [
+      { url: '/ferma logo favicon.png', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/ferma logo favicon.png', type: 'image/png' },
+    ],
+  },
 };
 
 export default function RootLayout({
