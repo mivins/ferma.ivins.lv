@@ -20,15 +20,39 @@ const FermaWaitlistForm: React.FC<WaitlistFormProps> = ({ content, id }) => {
 
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus('submitting');
 
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      const response = await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Handle errors
+        alert(data.error || 'Something went wrong. Please try again.');
+        setStatus('idle');
+        return;
+      }
+
+      // Success
       setStatus('success');
       setFormData({ name: '', email: '', isBeta: false, isHelper: false, isSponsor: false });
-    }, 1500);
+
+      // Reset success message after 5 seconds
+      setTimeout(() => setStatus('idle'), 5000);
+    } catch (error) {
+      console.error('Submission error:', error);
+      alert('Failed to join waitlist. Please try again.');
+      setStatus('idle');
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
