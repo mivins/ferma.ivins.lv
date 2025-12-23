@@ -1,25 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDatabase } from '@/lib/mongodb';
+import { db, signups } from '@/lib/postgres';
 import { requireApiKey } from '@/lib/auth';
-import { getTimeRangeFilter } from '@/lib/time-utils';
+import { desc, asc, count, gte, lte, eq, and, SQL } from 'drizzle-orm';
+import { parseRelativeTime } from '@/lib/time-utils';
 
 /**
  * GET /api/signups/list
  * Returns a paginated list of signups with filtering options
- * 
- * Query Parameters:
- * - limit: Number of results to return (default: 50, max: 500)
- * - offset: Number of results to skip for pagination (default: 0)
- * - since: Filter signups after this time (relative like "24h" or ISO timestamp)
- * - until: Filter signups before this time (ISO timestamp)
- * - sortBy: Field to sort by (default: "createdAt")
- * - order: Sort order "asc" or "desc" (default: "desc")
- * - isBeta: Filter by beta interest (true/false)
- * - isHelper: Filter by helper interest (true/false)
- * - isSponsor: Filter by sponsor interest (true/false)
- * 
- * Headers:
- * - X-API-Key: Required API key for authentication
  */
 export async function GET(request: NextRequest) {
     // Check authentication
@@ -32,7 +19,7 @@ export async function GET(request: NextRequest) {
         // Parse pagination parameters
         const limit = Math.min(
             parseInt(searchParams.get('limit') || '50', 10),
-            500 // Max limit
+            500
         );
         const offset = parseInt(searchParams.get('offset') || '0', 10);
 
@@ -42,50 +29,69 @@ export async function GET(request: NextRequest) {
 
         // Parse sorting
         const sortBy = searchParams.get('sortBy') || 'createdAt';
-        const order = searchParams.get('order') === 'asc' ? 1 : -1;
+        const order = searchParams.get('order') === 'asc' ? 'asc' : 'desc';
 
         // Parse boolean filters
         const isBeta = searchParams.get('isBeta');
         const isHelper = searchParams.get('isHelper');
         const isSponsor = searchParams.get('isSponsor');
 
-        const db = await getDatabase();
-        const waitlistCollection = db.collection('waitlist');
+        // Build conditions
+        const conditions: SQL[] = [];
 
-        // Build query filter
-        const filter: Record<string, any> = {
-            ...getTimeRangeFilter(since, until)
-        };
-
-        // Add boolean filters if specified
-        if (isBeta !== null) {
-            filter.isBeta = isBeta === 'true';
-        }
-        if (isHelper !== null) {
-            filter.isHelper = isHelper === 'true';
-        }
-        if (isSponsor !== null) {
-            filter.isSponsor = isSponsor === 'true';
+        if (since) {
+            try {
+                const sinceDate = /^\d+[hdw]$/.test(since)
+                    ? parseRelativeTime(since)
+                    : new Date(since);
+                conditions.push(gte(signups.createdAt, sinceDate));
+            } catch (e) {
+                console.error('Error parsing since:', e);
+            }
         }
 
-        // Get total count for pagination info
-        const total = await waitlistCollection.countDocuments(filter);
+        if (until) {
+            try {
+                conditions.push(lte(signups.createdAt, new Date(until)));
+            } catch (e) {
+                console.error('Error parsing until:', e);
+            }
+        }
+
+        if (isBeta !== null && isBeta !== undefined) {
+            conditions.push(eq(signups.isBeta, isBeta === 'true'));
+        }
+        if (isHelper !== null && isHelper !== undefined) {
+            conditions.push(eq(signups.isHelper, isHelper === 'true'));
+        }
+        if (isSponsor !== null && isSponsor !== undefined) {
+            conditions.push(eq(signups.isSponsor, isSponsor === 'true'));
+        }
+
+        const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+
+        // Get total count
+        const countResult = await db.select({ count: count() })
+            .from(signups)
+            .where(whereClause);
+        const total = countResult[0]?.count || 0;
 
         // Get signups with pagination
-        const signups = await waitlistCollection
-            .find(filter)
-            .sort({ [sortBy]: order })
-            .skip(offset)
+        const orderFn = order === 'asc' ? asc : desc;
+        const results = await db.select()
+            .from(signups)
+            .where(whereClause)
+            .orderBy(orderFn(signups.createdAt))
             .limit(limit)
-            .toArray();
+            .offset(offset);
 
         return NextResponse.json({
-            signups,
+            signups: results,
             total,
-            returned: signups.length,
+            returned: results.length,
             offset,
             limit,
-            hasMore: offset + signups.length < total
+            hasMore: offset + results.length < total
         });
     } catch (error) {
         console.error('Signups list error:', error);

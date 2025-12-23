@@ -1,19 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDatabase } from '@/lib/mongodb';
+import { db, signups } from '@/lib/postgres';
 import { requireApiKey } from '@/lib/auth';
-import { getTimeRangeFilter, getTimeGrouping, formatGroupedDate } from '@/lib/time-utils';
+import { count, gte, lte, and, sql, SQL } from 'drizzle-orm';
+import { parseRelativeTime } from '@/lib/time-utils';
 
 /**
  * GET /api/signups/analytics
  * Returns analytical breakdown of signups over time
- * 
- * Query Parameters:
- * - groupBy: Group by time period - "hour", "day", "week" (default: "day")
- * - since: Start period (default: "30d")
- * - until: End period (default: now)
- * 
- * Headers:
- * - X-API-Key: Required API key for authentication
  */
 export async function GET(request: NextRequest) {
     // Check authentication
@@ -35,67 +28,103 @@ export async function GET(request: NextRequest) {
             );
         }
 
-        const db = await getDatabase();
-        const waitlistCollection = db.collection('waitlist');
+        // Build conditions
+        const conditions: SQL[] = [];
 
-        // Build time filter
-        const timeFilter = getTimeRangeFilter(since, until);
+        if (since) {
+            try {
+                const sinceDate = /^\d+[hdw]$/.test(since)
+                    ? parseRelativeTime(since)
+                    : new Date(since);
+                conditions.push(gte(signups.createdAt, sinceDate));
+            } catch (e) {
+                console.error('Error parsing since:', e);
+            }
+        }
+
+        if (until) {
+            try {
+                conditions.push(lte(signups.createdAt, new Date(until)));
+            } catch (e) {
+                console.error('Error parsing until:', e);
+            }
+        }
+
+        const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
         // Get summary statistics
-        const totalSignups = await waitlistCollection.countDocuments(timeFilter);
-        const betaInterested = await waitlistCollection.countDocuments({
-            ...timeFilter,
-            isBeta: true
-        });
-        const helpers = await waitlistCollection.countDocuments({
-            ...timeFilter,
-            isHelper: true
-        });
-        const sponsors = await waitlistCollection.countDocuments({
-            ...timeFilter,
-            isSponsor: true
-        });
+        const summaryResult = await db.select({
+            total: count(),
+            betaInterested: sql<number>`SUM(CASE WHEN is_beta THEN 1 ELSE 0 END)::int`,
+            helpers: sql<number>`SUM(CASE WHEN is_helper THEN 1 ELSE 0 END)::int`,
+            sponsors: sql<number>`SUM(CASE WHEN is_sponsor THEN 1 ELSE 0 END)::int`,
+        })
+            .from(signups)
+            .where(whereClause);
 
-        // Get timeline data using aggregation
-        const timeGrouping = getTimeGrouping(groupBy);
+        const summary = {
+            total: summaryResult[0]?.total || 0,
+            betaInterested: summaryResult[0]?.betaInterested || 0,
+            helpers: summaryResult[0]?.helpers || 0,
+            sponsors: summaryResult[0]?.sponsors || 0,
+        };
 
-        const timeline = await waitlistCollection.aggregate([
-            { $match: Object.keys(timeFilter).length > 0 ? timeFilter : {} },
-            {
-                $group: {
-                    _id: timeGrouping,
-                    count: { $sum: 1 },
-                    beta: {
-                        $sum: { $cond: ['$isBeta', 1, 0] }
-                    },
-                    helpers: {
-                        $sum: { $cond: ['$isHelper', 1, 0] }
-                    },
-                    sponsors: {
-                        $sum: { $cond: ['$isSponsor', 1, 0] }
-                    }
-                }
-            },
-            { $sort: { '_id.year': 1, '_id.month': 1, '_id.day': 1, '_id.hour': 1 } }
-        ]).toArray();
+        // Get timeline based on groupBy
+        let dateFormat: string;
+        switch (groupBy) {
+            case 'hour':
+                dateFormat = 'YYYY-MM-DD HH24:00';
+                break;
+            case 'week':
+                dateFormat = 'IYYY-IW';
+                break;
+            default:
+                dateFormat = 'YYYY-MM-DD';
+        }
 
-        // Format the timeline results
-        const formattedTimeline = timeline.map(item => ({
-            period: formatGroupedDate(item._id, groupBy),
-            count: item.count,
-            beta: item.beta,
-            helpers: item.helpers,
-            sponsors: item.sponsors
+        // Build WHERE clause for timeline
+        let timelineWhereClause;
+        if (conditions.length === 2) {
+            const sinceDate = /^\d+[hdw]$/.test(since!)
+                ? parseRelativeTime(since!)
+                : new Date(since!);
+            const untilDate = new Date(until!);
+            timelineWhereClause = sql`WHERE created_at >= ${sinceDate} AND created_at <= ${untilDate}`;
+        } else if (since) {
+            const sinceDate = /^\d+[hdw]$/.test(since)
+                ? parseRelativeTime(since)
+                : new Date(since);
+            timelineWhereClause = sql`WHERE created_at >= ${sinceDate}`;
+        } else if (until) {
+            timelineWhereClause = sql`WHERE created_at <= ${new Date(until)}`;
+        } else {
+            timelineWhereClause = sql``;
+        }
+
+        const timelineResult = await db.execute(sql`
+            SELECT
+                TO_CHAR(created_at, ${dateFormat}) as period,
+                COUNT(*)::int as count,
+                SUM(CASE WHEN is_beta THEN 1 ELSE 0 END)::int as beta,
+                SUM(CASE WHEN is_helper THEN 1 ELSE 0 END)::int as helpers,
+                SUM(CASE WHEN is_sponsor THEN 1 ELSE 0 END)::int as sponsors
+            FROM signups
+            ${timelineWhereClause}
+            GROUP BY period
+            ORDER BY period ASC
+        `);
+
+        const timeline = (timelineResult.rows as any[]).map(row => ({
+            period: row.period,
+            count: row.count,
+            beta: row.beta,
+            helpers: row.helpers,
+            sponsors: row.sponsors
         }));
 
         return NextResponse.json({
-            summary: {
-                total: totalSignups,
-                betaInterested,
-                helpers,
-                sponsors
-            },
-            timeline: formattedTimeline,
+            summary,
+            timeline,
             groupBy,
             filter: {
                 since,

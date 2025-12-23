@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDatabase } from '@/lib/mongodb';
+import { db, signups } from '@/lib/postgres';
+import { eq, desc, count } from 'drizzle-orm';
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,38 +24,34 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get database connection
-    const db = await getDatabase();
-    const waitlistCollection = db.collection('waitlist');
-
     // Check if email already exists
-    const existingEntry = await waitlistCollection.findOne({ email });
-    if (existingEntry) {
+    const existing = await db.select()
+      .from(signups)
+      .where(eq(signups.email, email.toLowerCase()))
+      .limit(1);
+
+    if (existing.length > 0) {
       return NextResponse.json(
         { error: 'Email already registered' },
         { status: 409 }
       );
     }
 
-    // Create waitlist entry
-    const waitlistEntry = {
+    // Insert new signup
+    const result = await db.insert(signups).values({
       name,
-      email,
+      email: email.toLowerCase(),
       isBeta: Boolean(isBeta),
       isHelper: Boolean(isHelper),
       isSponsor: Boolean(isSponsor),
-      createdAt: new Date(),
-      timestamp: Date.now(),
-    };
-
-    // Insert into database
-    const result = await waitlistCollection.insertOne(waitlistEntry);
+      source: 'website',
+    }).returning();
 
     return NextResponse.json(
       {
         success: true,
         message: 'Successfully joined the waitlist!',
-        id: result.insertedId,
+        id: result[0].id,
       },
       { status: 201 }
     );
@@ -69,22 +66,24 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
   try {
-    const db = await getDatabase();
-    const waitlistCollection = db.collection('waitlist');
-
     // Get total count
-    const count = await waitlistCollection.countDocuments();
+    const countResult = await db.select({ count: count() }).from(signups);
+    const total = countResult[0]?.count || 0;
 
     // Get recent signups (last 10)
-    const recentSignups = await waitlistCollection
-      .find({})
-      .sort({ createdAt: -1 })
-      .limit(10)
-      .project({ name: 1, createdAt: 1, isBeta: 1, isHelper: 1, isSponsor: 1 })
-      .toArray();
+    const recentSignups = await db.select({
+      name: signups.name,
+      createdAt: signups.createdAt,
+      isBeta: signups.isBeta,
+      isHelper: signups.isHelper,
+      isSponsor: signups.isSponsor,
+    })
+      .from(signups)
+      .orderBy(desc(signups.createdAt))
+      .limit(10);
 
     return NextResponse.json({
-      total: count,
+      total,
       recent: recentSignups,
     });
   } catch (error) {
